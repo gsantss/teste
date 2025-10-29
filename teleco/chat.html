@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chat Marketplace Mock</title>
+<style>
+  :root {
+    --bg-page:#ffffff;
+    --bg-header:#ffffff;
+    --bg-chat-left:#f2f3f5;
+    --bg-chat-right:#0444f4
+
+; /* azul Messenger */
+    --text-main:#000000;
+    --text-secondary:#65676b;
+    --border:#d9dce1;
+    --bubble-radius:18px;
+    --iphone-width:390px;   /* iPhone 12/13/14 width */
+    --iphone-height:844px;  /* altura referência, pode rolar */
+    --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+
+  body {
+    background:#000; /* só pra destacar o mock */
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px;
+    font-family:var(--font);
+  }
+
+  .phone-frame {
+    width:var(--iphone-width);
+    height:var(--iphone-height);
+    background:var(--bg-page);
+    border-radius:30px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    border:1px solid #1a1a1a;
+    position:relative;
+  }
+
+  /* Barra de status (topo iOS) */
+  .status-bar {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:12px 16px 8px;
+    font-weight:600;
+    color:var(--text-main);
+    line-height:1.2;
+    font-size:12px;
+  }
+
+  .status-left {
+    font-size:20px;
+    line-height:20px;
+    font-weight:600;
+  }
+
+  .status-right {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:14px;
+    font-weight:500;
+  }
+
+  .right-icons {
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  /* Sinal celular: barras */
+  .signal-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:1px;
+  }
+  .bar{
+    width:2px;
+    background:#000;
+    border-radius:1px;
+  }
+  .bar1{height:4px;opacity:.4}
+  .bar2{height:6px;opacity:.6}
+  .bar3{height:8px;opacity:.8}
+  .bar4{height:10px;opacity:1}
+
+  /* Wi-Fi ícone bem simples */
+  .wifi-icon{
+    width:16px;
+    height:12px;
+    border:2px solid #000;
+    border-bottom:none;
+    border-radius:50% 50% 0 0;
+    position:relative;
+  }
+  .wifi-icon:after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:45%;
+    width:4px;
+    height:4px;
+    background:#000;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  /* Bateria com porcentagem verde */
+  .battery-wrap{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+  .battery-shell{
+    position:relative;
+    width:24px;
+    height:11px;
+    border:1.5px solid #000;
+    border-radius:3px;
+    box-sizing:border-box;
+  }
+  .battery-shell::after{
+    content:"";
+    position:absolute;
+    right:-3px;
+    top:3px;
+    width:2px;
+    height:5px;
+    background:#000;
+    border-radius:1px;
+  }
+  .battery-level{
+    position:absolute;
+    left:1px;
+    top:1px;
+    bottom:1px;
+    right:5px;
+    background:#000;
+    border-radius:2px;
+  }
+  .battery-percent{
+    background:#00c853;
+    color:#fff;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:600;
+    line-height:1;
+    padding:2px 6px;
+  }
+
+  /* HEADER DA CONVERSA */
+  .chat-header {
+    background:var(--bg-header);
+    border-bottom:1px solid var(--border);
+    padding:8px 12px;
+    display:flex;
+    align-items:center;
+    font-size:15px;
+    line-height:20px;
+    font-weight:500;
+  }
+
+  .back-arrow {
+    font-size:24px;
+    line-height:24px;
+    font-weight:400;
+    color:#0766ff;
+    margin-right:8px;
+  }
+
+  .header-avatar {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#ccc center/cover no-repeat;
+    border:0.5px solid #cfcfcf;
+    margin-right:8px;
+  }
+
+  .header-texts {
+    display:flex;
+    flex-direction:column;
+    font-size:15px;
+    line-height:18px;
+  }
+
+  .header-title {
+    color:var(--text-main);
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* BLOCO SUPERIOR (foto grande + título grande + descrição "Fabiana started...") */
+  .profile-block {
+    padding:20px 16px 12px;
+    text-align:center;
+    border-bottom:1px solid transparent; /* só pra separar visualmente do chat depois */
+  }
+
+  .big-avatar {
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    background:#ccc center/cover no-repeat;
+    border:0.5px solid #cfcfcf;
+    margin:0 auto 16px;
+  }
+
+  .big-name {
+    font-size:20px;
+    line-height:24px;
+    font-weight:600;
+    color:var(--text-main);
+    text-align:center;
+    max-width:300px;
+    margin:0 auto 12px;
+  }
+
+  .chat-meta {
+    font-size:14px;
+    line-height:18px;
+    color:var(--text-main);
+    font-weight:400;
+    text-align:center;
+  }
+
+  .chat-meta .link {
+    color:#0866ff;
+    font-weight:500;
+  }
+
+  /* ÁREA DO CHAT EM SI */
+  .chat-scroll-area {
+    flex:1;
+    overflow-y:auto;
+    padding:12px 12px 100px; /* dar espaço pra barra de input */
+    box-sizing:border-box;
+  }
+
+  .msg-row {
+    display:flex;
+    margin-bottom:8px;
+    max-width:90%;
+  }
+
+  /* Mensagem recebida (esquerda) */
+  .msg-left {
+    align-items:flex-start;
+  }
+
+  .left-avatar {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#ccc center/cover no-repeat;
+    border:0.5px solid #cfcfcf;
+    margin-right:8px;
+    flex-shrink:0;
+  }
+
+  .bubble-left-wrapper {
+    display:flex;
+    flex-direction:column;
+  }
+
+  .bubble-left {
+    background:var(--bg-chat-left);
+    color:var(--text-main);
+    border-radius:var(--bubble-radius);
+    border-top-left-radius:6px;
+    padding:12px 14px;
+    font-size:16px;
+    line-height:20px;
+    font-weight:400;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+
+  .msg-status-below {
+    margin-top:4px;
+    background:var(--bg-chat-left);
+    border-radius:var(--bubble-radius);
+    border-top-left-radius:6px;
+    padding:10px 14px;
+    font-size:15px;
+    line-height:18px;
+    font-weight:600;
+    color:#000;
+    display:inline-block;
+  }
+
+  /* timestamp no meio */
+  .timestamp {
+    text-align:center;
+    color:var(--text-secondary);
+    font-size:12px;
+    line-height:14px;
+    font-weight:500;
+    margin:16px 0;
+    letter-spacing:.03em;
+  }
+
+  /* Mensagem enviada (direita) */
+  .msg-right-wrap {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    width:100%;
+  }
+
+  .bubble-right {
+    background:var(--bg-chat-right);
+    color:#fff;
+    border-radius:var(--bubble-radius);
+    border-bottom-right-radius:6px;
+    padding:12px 14px;
+    font-size:18px;
+    line-height:22px;
+    font-weight:400;
+    max-width:80%;
+    margin-right: -35px;
+    box-sizing:border-box;
+    word-break:break-word;
+  }
+
+  .bubble-right a {
+    color:#fff;
+    text-decoration:underline;
+    margin-right: -18px;
+  }
+
+  .tiny-avatar-right {
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#ccc center/cover no-repeat;
+    border:0.5px solid #cfcfcf;
+    margin-top:4px;
+    margin-right: -35px;
+  }
+
+  /* INPUT BAR (parte de baixo com câmera/galeria/mic/caixa de texto/emoji/joinha) */
+  .input-bar {
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#fff;
+    border-top:1px solid var(--border);
+    padding:10px 12px 20px;
+    box-sizing:border-box;
+  }
+
+  .input-row {
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    flex-wrap:nowrap;
+  }
+
+  .left-icons {
+    display:flex;
+    align-items:flex-end;
+    gap:20px;
+    font-size:24px;
+    color:#0844ff;
+  }
+
+  .left-icons .icon {
+    width:24px;
+    height:24px;
+    font-size:0;
+    position:relative;
+  }
+
+  /* ícones fake */
+  .icon.camera::before{
+    content:"📷";
+    font-size:24px;
+    line-height:24px;
+    color:#0844ff;
+  }
+  .icon.gallery::before{
+    content:"🖼️";
+    font-size:24px;
+    line-height:24px;
+    color:#0844ff;
+  }
+  .icon.mic::before{
+    content:"🎤";
+    font-size:24px;
+    line-height:24px;
+    color:#0844ff;
+  }
+
+  .middle-input {
+    display:flex;
+    align-items:center;
+    background:#f2f3f5;
+    border-radius:999px;
+    padding:5px 12px;
+    flex:1;
+    margin:0 12px;
+    min-height:30px;
+    font-size:17px;
+    line-height:15px;
+    color:#000;
+  }
+
+  .middle-input-placeholder {
+    color:#8a8d91;
+    font-weight:400;
+  }
+
+  .right-icons {
+    display:flex;
+    align-items:flex-end;
+    gap:16px;
+    font-size:24px;
+  }
+
+  .emoji {
+    font-size:24px;
+    line-height:24px;
+    color:#0844ff;
+  }
+
+  .thumb {
+    font-size:24px;
+    line-height:24px;
+    color:#0844ff;
+  }
+
+  /* barra preta fina tipo "home indicator" iPhone */
+  .home-indicator {
+    position:absolute;
+    left:50%;
+    bottom:6px;
+    width:134px;
+    height:4px;
+    background:#000;
+    border-radius:2px;
+    transform:translateX(-50%);
+  }
+
+  /* === Marketplace Listing Card === */
+.listing-card{
+  /* margin:8px 12px 0; */
+  background:#f5f6f7;
+  border:1px solid var(--border);
+  /* border-radius:16px; */
+  padding:12px;
+  font-family:var(--font);
+  width:95%;
+}
+
+.listing-header{
+  display:flex;
+  align-items: flex-start;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  height: 10px;
+}
+
+.listing-badge{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:10px;
+  line-height:16px;
+  color:#65676b;
+  font-weight:600;
+}
+
+.badge-icon{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:#f3f4f8;            /* roxinho claro do Messenger */
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+
+.badge-icon::before{
+  content:"🏬";                   /* ícone loja (fallback emoji) */
+  font-size:16px;
+}
+
+.listing-title{
+  font-size:12px;
+  line-height:18px;
+  color:#111;
+  font-weight:600;
+  margin-left:auto;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.listing-actions{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+  height: 30px;
+  align-items: flex-end;
+
+}
+
+.listing-btn{
+  flex:1;
+  background:#fff;
+  /* border:1px solid var(--border); */
+  border-radius:12px;
+  padding:7px 9px;
+  font-size:13px;
+  line-height:16px;
+  color:#111;
+  font-weight:500;
+  text-align: center;
+}
+
+/* opcional: hover sutil */
+.listing-btn:hover{ background:#fdfdfd; }
+
+
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <div class="status-left" >14:59</div>
+    <div class="status-right">
+      <div class="right-icons">
+        <div class="signal-bars">
+          <div class="bar bar1"></div>
+          <div class="bar bar2"></div>
+          <div class="bar bar3"></div>
+          <div class="bar bar4"></div>
+        </div>
+        <div class="wifi-icon"></div>
+        <div class="battery-wrap">
+          <div class="battery-shell">
+            <div class="battery-level" style="width:95%;"></div>
+          </div>
+          <div class="battery-percent" >100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER DA CONVERSA -->
+  <div class="chat-header">
+    <div class="back-arrow" >‹</div>
+    <div class="header-avatar"
+         style="background-image:url('avatar_fabiana.png');">
+    </div>
+    <div class="header-texts">
+      <div class="header-title" >
+        Marcia · Iphone 17 Pro Max 512GB
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE LISTING (CARD) -->
+  <div class="listing-card" style="height: 55px;">
+    <div class="listing-header" style="margin-top: 5px;">
+      <div class="listing-badge">
+        <div class="mark"><img src="market.png" alt="market" width="35px" style="margin-left: -5px; margin-top: 2px;"></div>
+      </div>
+      <div style="display: flex;margin-left: -7px;flex-direction: column;margin-top: -5px;">
+        <span class="listing-badge">Marketplace listing</span>
+        <div class="listing-title" style="margin-top: -5px;">R$5,200 – iPhone 17 pro Max 512 GB</div>
+      </div>
+    </div>
+
+    <div class="listing-actions">
+      <div class="listing-btn">View buyer</div>
+      <div class="listing-btn">More options</div>
+    </div>
+  </div>
+
+  <!-- BLOCO DE PERFIL E INFO DO CHAT -->
+  <div class="profile-block">
+    <div class="big-avatar"
+         style="background-image:url('imgdele.jpeg');">
+    </div>
+
+    <div class="big-name" >
+      Marcia · Iphone 17 Pro Max 512GB
+    </div>
+
+    <div class="chat-meta" >
+      Marcia started this chat.
+      <span class="link">View buyer profile</span>
+    </div>
+  </div>
+
+  <!-- ÁREA DE MENSAGENS / HISTÓRICO -->
+  <div class="chat-scroll-area">
+
+    <!-- Mensagem da outra pessoa -->
+    <div class="msg-row msg-left">
+      <div class="left-avatar"
+           style="background-image:url('avatar_fabiana.png'); margin-top: 15%;">
+      </div>
+
+      <div class="bubble-left-wrapper">
+        <div class="bubble-left" >
+          Esse item ainda está disponível?
+        </div>
+
+        <div class="msg-status-below" >
+          Message sent
+        </div>
+      </div>
+    </div>
+
+    <!-- Timestamp do meio -->
+    <div class="timestamp" >
+      09:20
+    </div>
+
+    <!-- Mensagem sua (direita) -->
+    <div class="msg-row msg-right">
+      <div class="msg-right-wrap">
+        <div class="bubble-right" >
+          Está sim, chama lá:<br/><br/>
+          <a href="#" >31 996199368</a>
+        </div>
+
+        <div class="tiny-avatar-right"
+             style="background-image:url('avatar_fabiana.png');">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <div class="input-row">
+
+      <div class="left-icons" style="margin-bottom: 5px;">
+        <div class="cam" title="camera"><img src="cam.png" alt="cam" style="margin-bottom: 1px;"></div>
+        <div class="gallery" title="gallery" style="margin-left: -19px; margin-bottom: 3px;"><img src="gallery.png" alt="gallery" style="width: 35px; margin-left: -10px;"></div>
+        <div class="mic" title="voice" style="margin-left: -15px;"><img src="mic.png" alt="mic" style="width: 35px; margin-left: -10px; margin-bottom: 2px;"></div>
+      </div>
+
+      <div class="middle-input" style="width: auto; margin-bottom: 8px;">
+        <div class="middle-input-placeholder" >Aa</div>
+        <div class="emoji" title="emoji"><img src="smile.png" alt="smile" style="width: 35px; margin-left: 130px; margin-top: 5px;"></div>
+      </div>
+      <div class="thumb" title="like" style="margin-left: -10px;
+    display: inline-grid
+;
+    align-content: space-around;
+    justify-content: start;"><img src="like1.png" alt="like" style="width: 40px; margin-bottom: 13px;"></div>
+
+
+
+
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+
+</div>
+
+</body>
+</html>

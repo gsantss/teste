@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Marketplace iOS Mock</title>
+<style>
+  :root {
+    --text-main:#000;
+    --text-secondary:#6a6a6a;
+    --border:#e5e5e5;
+    --bg:#fff;
+    --row-height:64px;
+    --font-main:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+
+  body {
+    margin:0;
+    background:var(--bg);
+    font-family:var(--font-main);
+    color:var(--text-main);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ------------- STATUS BAR (custom fake iOS bar) ------------- */
+  .statusbar-wrapper{
+    background:var(--bg);
+    padding-top:6px; /* dá aquele espaço de notch */
+    border-bottom:1px solid var(--bg); /* invisível mas mantém alinhamento */
+    font-size:12px;
+    line-height:1.2;
+    font-weight:600;
+  }
+
+  .statusbar{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:0 12px 4px;
+  }
+
+  .status-left{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .status-left-time{
+    font-size:20px;
+    line-height:20px;
+    font-weight:600;
+  }
+  .status-left-app{
+    font-size:11px;
+    line-height:13px;
+    font-weight:500;
+    color:var(--text-main);
+  }
+
+  .status-center{
+    flex:1;
+    text-align:center;
+    font-size:0; /* fica vazio igual print (não tinha carrier name visível) */
+  }
+
+  .status-right{
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+    font-size:12px;
+    line-height:14px;
+    font-weight:500;
+  }
+
+  .signal-group{
+    display:flex;
+    align-items:center;
+    gap:4px;
+  }
+
+  .signal-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:1px;
+  }
+  .bar{
+    width:2px;
+    background:#000;
+    border-radius:1px;
+  }
+  .bar1{height:4px;opacity:.4}
+  .bar2{height:6px;opacity:.6}
+  .bar3{height:8px;opacity:.8}
+  .bar4{height:10px;opacity:1}
+
+  .wifi-icon{
+    width:14px;
+    height:10px;
+    border:2px solid #000;
+    border-radius:50% 50% 0 0;
+    border-bottom:none;
+    position:relative;
+  }
+  .wifi-icon:after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:40%;
+    width:4px;
+    height:4px;
+    background:#000;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+  }
+
+  .battery{
+    display:flex;
+    align-items:center;
+    gap:3px;
+  }
+  .battery-shell{
+    position:relative;
+    width:24px;
+    height:11px;
+    border:1.5px solid #000;
+    border-radius:3px;
+    box-sizing:border-box;
+  }
+  .battery-shell::after{
+    content:"";
+    position:absolute;
+    right:-3px;
+    top:3px;
+    width:2px;
+    height:5px;
+    background:#000;
+    border-radius:1px;
+  }
+  .battery-level{
+    position:absolute;
+    left:1px;
+    top:1px;
+    bottom:1px;
+    background:#000;
+    width:70%; /* <<< % visual da bateria; ajuste */
+    border-radius:2px;
+  }
+  .battery-percent{
+    font-size:12px;
+    font-weight:600;
+  }
+
+  /* ------------- NAV BAR (linha com voltar + título) ------------- */
+  .navbar{
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid var(--border);
+    padding:8px 12px;
+  }
+  .back-btn{
+    font-size:24px;
+    line-height:24px;
+    font-weight:400;
+    padding-right:8px;
+    cursor:default;
+  }
+  .nav-title{
+    flex:1;
+    text-align:center;
+    font-size:17px;
+    font-weight:600;
+    line-height:22px;
+  }
+  /* espaço à direita pra equilibrar o flex */
+  .nav-right-placeholder{
+    width:24px;
+  }
+
+  /* ------------- LISTA DE CHATS ------------- */
+  .chat-list{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .chat-row{
+    display:flex;
+    align-items:flex-start;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    min-height:var(--row-height);
+    box-sizing:border-box;
+  }
+
+  .avatar{
+    width:52px;
+    min-width:52px;
+    height:52px;
+    border-radius:50%;
+    flex-shrink:0;
+    background:#ddd center/cover no-repeat;
+    margin-right:10px;
+    border:0.5px solid #cfcfcf;
+  }
+
+  .chat-main{
+    flex:1;
+    min-width:0; /* pra habilitar truncamento */
+    display:flex;
+    flex-direction:column;
+    font-size:15px;
+    line-height:20px;
+  }
+
+  .chat-topline{
+    font-weight:600;
+    color:var(--text-main);
+    font-size:15px;
+    line-height:20px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .chat-subline{
+    display:flex;
+    flex-wrap:nowrap;
+    font-size:14px;
+    line-height:18px;
+    color:var(--text-secondary);
+    font-weight:400;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .chat-subline .you{
+    color:var(--text-secondary);
+    font-weight:400;
+  }
+
+  .dot{
+    margin:0 4px;
+    color:var(--text-secondary);
+  }
+
+  .row-right{
+    margin-left:8px;
+    display:flex;
+    align-items:center;
+    min-width:24px;
+    min-height:24px;
+    justify-content:flex-end;
+  }
+
+  /* bolinha com check */
+  .delivered-icon{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:1.5px solid #999;
+    color:#999;
+    font-size:12px;
+    line-height:18px;
+    font-weight:600;
+    text-align:center;
+    box-sizing:border-box;
+    font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+  }
+
+  /* mini avatar à direita (quando aparece o rosto da pessoa) */
+  .mini-avatar{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:#ccc center/cover no-repeat;
+    border:0.5px solid #cfcfcf;
+  }
+
+  /* ajusta espaçamento da subline tipo "2 linhas?" do iOS */
+  .chat-row-block{
+    flex:1;
+    min-width:0;
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- STATUS BAR -->
+  <div class="statusbar-wrapper">
+    <div class="statusbar">
+      <div class="status-left">
+        <div class="status-left-time" contenteditable="true">10:32</div>
+        
+      </div>
+
+      <div class="status-center"><!-- vazio intencionalmente --></div>
+
+      <div class="status-right">
+        <div class="signal-group" style="font-size:12px;">
+          <div class="signal-bars">
+            <div class="bar bar1"></div>
+            <div class="bar bar2"></div>
+            <div class="bar bar3"></div>
+            <div class="bar bar4"></div>
+          </div>
+          
+        </div>
+
+        <!-- <div class="wifi-icon" title="Wi-Fi"></div> -->
+
+        <div class="battery">
+          <div class="battery-shell">
+            <div class="battery-level" style="width:70%;"></div>
+          </div>
+          <div class="battery-percent" contenteditable="true">86%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV BAR -->
+  <div class="navbar">
+    <div class="back-btn" contenteditable="true">‹</div>
+    <div class="nav-title" contenteditable="true">Marketplace</div>
+    <div class="nav-right-placeholder"></div>
+  </div>
+
+  <!-- LISTA DE CONVERSAS -->
+  <div class="chat-list">
+
+    <!-- 1 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+         Carlos · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:55</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Raphael Mattos · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:55</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Luisa Milner · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" style="font-weight:400;" contenteditable="true">
+            You: Está sim, chama lá:
+          </span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:54</span>
+        </div>
+      </div>
+
+      <div class="row-right"><!-- nada à direita nesse do print --></div>
+    </div>
+
+    <!-- 4 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Mauricio Lima · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" style="font-weight:400;" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:54</span>
+        </div>
+      </div>
+
+      <div class="row-right"><!-- vazio --></div>
+    </div>
+
+    <!-- 5 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Andreza Tolentino · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:53</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Pablo Gomes · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" style="font-weight:400;" contenteditable="true">
+            You: Está sim, chama lá:
+          </span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:52</span>
+        </div>
+      </div>
+
+      <div class="row-right"><!-- vazio --></div>
+    </div>
+
+    <!-- 7 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Nicole Pereira · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:52</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Paulo · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:51</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Natanael Pereira · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama la:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:51</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="chat-row">
+      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+
+      <div class="chat-row-block">
+        <div class="chat-topline" contenteditable="true">
+          Brena Moreira · Iphone 17 Pro Max 512GB
+        </div>
+        <div class="chat-subline">
+          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
+          <span class="dot">·</span>
+          <span contenteditable="true">16:50</span>
+        </div>
+      </div>
+
+      <div class="row-right">
+        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

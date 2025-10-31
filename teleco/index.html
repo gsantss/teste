@@ -325,208 +325,95 @@
     <div class="nav-right-placeholder"></div>
   </div>
 
-  <!-- LISTA DE CONVERSAS -->
-  <div class="chat-list">
+  <!-- LISTA DE CONVERSAS (DINÂMICA) -->
+  <div id="chatList" class="chat-list"></div>
 
-    <!-- 1 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+  <!-- SCRIPT para preencher dinamicamente a lista -->
+  <script>
+    // ====== CONFIGURAÇÕES GERAIS ======
+    const options = {
+      deviceSuffix: " · Iphone 17 Pro Max 512GB", // sufixo após o nome
+      avatarUrl: "imgdele.jpeg",                   // avatar padrão à esquerda
+      defaultMiniAvatarUrl: "mini-avatar.jpeg"     // mini avatar padrão à direita
+    };
 
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-         Carlos · Iphone 17 Pro Max 512GB
+    // ====== EXEMPLO DE DADOS (substitua pelo seu array) ======
+    const dados = [
+      { nome: "J Gabriel", mensagem: "You: Está sim, chama lá:", horario: "16:32", right: "none" },
+      { nome: "Léo", mensagem: "You: Está sim, chama lá:", horario: "16:32", right: "check" },
+      { nome: "Fernando", mensagem: "You: Está sim, chama lá:", horario: "16:32", boldYou: false, right: "check" },
+      { nome: "Moacir", mensagem: "You: Está sim, chama lá:", horario: "16:31", boldYou: false, right: "none" },
+      { nome: "Ryuler Marcelo", mensagem: "You: Está sim, chama lá:", horario: "16:31", right: "check", miniAvatarUrl: "mini-avatar.jpeg" },
+      { nome: "João Lucas", mensagem: "You: Está sim, chama lá:", horario: "16:31", boldYou: false, right: "none" },
+      { nome: "Lívia", mensagem: "You: Está sim, chama lá:", horario: "16:30", right: "check" },
+      { nome: "Lara Soares", mensagem: "You: Está sim, chama lá:", horario: "16:30", right: "none", miniAvatarUrl: "mini-avatar.jpeg" },
+      { nome: "José Antonio", mensagem: "You: Está sim, chama la:", horario: "16:29", right: "none", miniAvatarUrl: "mini-avatar.jpeg" },
+      { nome: "Maria Eduarda", mensagem: "You: Está sim, chama lá:", horario: "16:27", right: "check", miniAvatarUrl: "mini-avatar.jpeg" }
+    ];
+
+    // ====== FUNÇÕES ======
+    function escapeHtml(str){
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function buildRightCol(item){
+      const right = (item.right || "none").toLowerCase();
+      if(right === "check"){
+        return '<div class="row-right"><div class="delivered-icon" title="delivered" contenteditable="true">✓</div></div>';
+      }
+      if(right === "mini"){
+        const mini = escapeHtml(item.miniAvatarUrl || options.defaultMiniAvatarUrl || "mini-avatar.jpeg");
+        return `<div class="row-right"><div class="mini-avatar" style="background-image:url('${mini}');"></div></div>`;
+      }
+      return '<div class="row-right"><!-- vazio --></div>';
+    }
+
+    function buildRow(item){
+      const nome = escapeHtml(item.nome ?? "");
+      const mensagem = escapeHtml(item.mensagem ?? "");
+      const horario = escapeHtml(item.horario ?? "");
+      const device = escapeHtml(item.device || options.deviceSuffix || "");
+      const boldYou = item.boldYou === false ? "font-weight:400;" : "";
+      const avatar = escapeHtml(item.avatarUrl || options.avatarUrl || "imgdele.jpeg");
+
+      return `
+      <div class="chat-row">
+        <div class="avatar" style="background-image:url('${avatar}');"></div>
+        <div class="chat-row-block">
+          <div class="chat-topline" contenteditable="true">${nome}${device}</div>
+          <div class="chat-subline">
+            <span class="you" style="${boldYou}" contenteditable="true">${mensagem}</span>
+            <span class="dot">·</span>
+            <span contenteditable="true">${horario}</span>
+          </div>
         </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:55</span>
-        </div>
-      </div>
+        ${buildRightCol(item)}
+      </div>`;
+    }
 
-      <div class="row-right">
-        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
-      </div>
-    </div>
+    function renderChats(lista){
+      const container = document.getElementById("chatList");
+      container.innerHTML = lista.map(buildRow).join("\n");
+    }
 
-    <!-- 2 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
+    // Render inicial
+    renderChats(dados);
 
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Raphael Mattos · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:55</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
-      </div>
-    </div>
-
-    <!-- 3 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Luisa Milner · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" style="font-weight:400;" contenteditable="true">
-            You: Está sim, chama lá:
-          </span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:54</span>
-        </div>
-      </div>
-
-      <div class="row-right"><!-- nada à direita nesse do print --></div>
-    </div>
-
-    <!-- 4 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Mauricio Lima · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" style="font-weight:400;" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:54</span>
-        </div>
-      </div>
-
-      <div class="row-right"><!-- vazio --></div>
-    </div>
-
-    <!-- 5 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Andreza Tolentino · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:53</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
-      </div>
-    </div>
-
-    <!-- 6 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Pablo Gomes · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" style="font-weight:400;" contenteditable="true">
-            You: Está sim, chama lá:
-          </span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:52</span>
-        </div>
-      </div>
-
-      <div class="row-right"><!-- vazio --></div>
-    </div>
-
-    <!-- 7 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Nicole Pereira · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:52</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="delivered-icon" title="delivered" contenteditable="true">✓</div>
-      </div>
-    </div>
-
-    <!-- 8 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Paulo · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:51</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
-      </div>
-    </div>
-
-    <!-- 9 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Natanael Pereira · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama la:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:51</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
-      </div>
-    </div>
-
-    <!-- 10 -->
-    <div class="chat-row">
-      <div class="avatar" style="background-image:url('imgdele.jpeg');"></div>
-
-      <div class="chat-row-block">
-        <div class="chat-topline" contenteditable="true">
-          Brena Moreira · Iphone 17 Pro Max 512GB
-        </div>
-        <div class="chat-subline">
-          <span class="you" contenteditable="true">You: Está sim, chama lá:</span>
-          <span class="dot">·</span>
-          <span contenteditable="true">16:50</span>
-        </div>
-      </div>
-
-      <div class="row-right">
-        <div class="mini-avatar" style="background-image:url('mini-avatar.jpeg');"></div>
-      </div>
-    </div>
-
-  </div>
+    // ====== COMO USAR SEU ARRAY ======
+    // Formato mínimo aceito:
+    // [{ nome: "J Gabriel", mensagem: "You: Está sim, chama lá:", horario: "16:32" }, ...]
+    // Opcionais por item:
+    // - right: "check" | "mini" | "none"
+    // - miniAvatarUrl: "mini-avatar.jpeg"
+    // - boldYou: false
+    // - device: " · Iphone 17 Pro Max 512GB"
+    // - avatarUrl: "imgdele.jpeg"
+  </script>
 
 </body>
 </html>

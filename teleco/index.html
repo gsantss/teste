@@ -257,8 +257,8 @@
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    border: 1.5px solid #999;
-    color: #999;
+    border: 1.5px solid #646161;
+    color: #646161;
     font-size: 10px;
     line-height: 10px;
     font-weight: 600;
@@ -365,7 +365,8 @@
     function buildRightCol(item){
       const right = (item.right || "none").toLowerCase();
       if(right === "check"){
-        return '<div class="row-right"><div class="delivered-icon" title="delivered" contenteditable="true">✓</div></div>';
+        const check = escapeHtml("check.png");
+        return `<div class="row-right"><div class="mini-avatar" title="delivered" contenteditable="true"><img src='${check}' style="width: 100%;"></div></div>`;
       }
       if(right === "mini"){
         const mini = escapeHtml(item.miniAvatarUrl || options.defaultMiniAvatarUrl || "mini-avatar.jpeg");

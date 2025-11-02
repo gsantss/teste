@@ -269,11 +269,11 @@
 
   /* mini avatar à direita (quando aparece o rosto da pessoa) */
   .mini-avatar{
-    width:20px;
-    height:20px;
-    border-radius:50%;
-    background:#ccc center/cover no-repeat;
-    border:0.5px solid #cfcfcf;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ccc center / cover no-repeat;
+    border: 0.5px solid #cfcfcf;
   }
 
   /* ajusta espaçamento da subline tipo "2 linhas?" do iOS */
@@ -366,7 +366,7 @@
       const right = (item.right || "none").toLowerCase();
       if(right === "check"){
         const check = escapeHtml("check.png");
-        return `<div class="row-right"><div class="mini-avatar" title="delivered" contenteditable="true"><img src='${check}' style="width: 100%;"></div></div>`;
+        return `<div class="row-right"><div class="mini-avatar" title="delivered" contenteditable="true"><img src='${check}' style="width: 103%; margin-bottom: 7px;"></div></div>`;
       }
       if(right === "mini"){
         const mini = escapeHtml(item.miniAvatarUrl || options.defaultMiniAvatarUrl || "mini-avatar.jpeg");
